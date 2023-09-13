@@ -1,4 +1,7 @@
--- Выполенения заданий https://sql-ex.ru/index.php
+-- Выполенения упражнений на ресурсе https://sql-ex.ru/index.php
+-- user: Victor535  
+
+
 
 -- 1) Задание: 1 (Serge I: 2002-09-30)
 -- Найдите номер модели, скорость и размер жесткого диска для всех ПК стоимостью менее 500 дол. Вывести: model, speed и hd
@@ -119,6 +122,89 @@
     SELECT  DISTINCT Product.type, Laptop.model, Laptop.speed 
     FROM Laptop, Product Where laptop.speed < (Select min(speed) FROM PC)
     AND product.type='Laptop'
+---------------------------------------------------------------------------------------------------------------------------
+
+-- 18)Задание: 18 (Serge I: 2003-02-03)
+-- Найдите производителей самых дешевых цветных принтеров. Вывести: maker, price
+
+    SELECT DISTINCT product.maker, Printer.price FROM Printer 
+    JOIN Product ON Printer.model = Product.model 
+    WHERE price = (SELECT MIN(price) FROM Printer Where color = 'y') 
+    AND color = 'y'
+---------------------------------------------------------------------------------------------------------------------------
+
+-- 19)Задание: 19 (Serge I: 2003-02-13)
+-- Для каждого производителя, имеющего модели в таблице Laptop, найдите средний размер экрана выпускаемых им ПК-блокнотов.
+-- Вывести: maker, средний размер экрана.
+
+    SELECT maker,avg(screen) AS avg_screen FROM Laptop 
+    JOIN Product ON Product.model = Laptop.model GROUP BY maker
+---------------------------------------------------------------------------------------------------------------------------
+
+-- 20)Задание: 20 (Serge I: 2003-02-13)
+-- Найдите производителей, выпускающих по меньшей мере три различных модели ПК. Вывести: Maker, число моделей ПК.
+
+-- SELECT product.maker, count(*) AS count_model FROM PC
+-- JOIN Product ON product.model = PC.model Where product.type = 'PC' 
+-- GROUP BY product.maker
+-- HAVING count(*) >= 3
+
+    SELECT maker, count(*) AS count_model
+    FROM product
+    WHERE type = 'pc'
+    GROUP BY maker
+    HAVING COUNT(*) > = 3
+---------------------------------------------------------------------------------------------------------------------------
+
+-- 21)Задание: 21 (Serge I: 2003-02-13)
+-- Найдите максимальную цену ПК, выпускаемых каждым производителем, у которого есть модели в таблице PC.
+-- Вывести: maker, максимальная цена.
+
+    SELECT maker, MAX(price) AS max_price
+    FROM Product JOIN PC ON product.model=pc.model 
+    WHERE type = 'pc'
+    GROUP BY maker
+---------------------------------------------------------------------------------------------------------------------------
+
+-- 22)Задание: 22 (Serge I: 2003-02-13)
+-- Для каждого значения скорости ПК, превышающего 600 МГц, определите среднюю цену ПК с такой же скоростью. 
+-- Вывести: speed, средняя цена.
+
+    SELECT speed, avg(price) AS avg_price FROM PC 
+    WHERE speed > 600  GROUP BY speed
+---------------------------------------------------------------------------------------------------------------------------
+
+-- 23)Задание: 23 (Serge I: 2003-02-14)
+-- Найдите производителей, которые производили бы как ПК
+-- со скоростью не менее 750 МГц, так и ПК-блокноты со скоростью не менее 750 МГц.
+-- Вывести: Maker
+
+    SELECT DISTINCT maker FROM product 
+    WHERE model IN 
+    (SELECT model FROM PC WHERE speed >= 750) 
+    OR model IN 
+    (SELECT model FROM Laptop WHERE speed >= 750);
 
 
+    SELECT DISTINCT maker FROM Product
+    JOIN PC ON Product.model = pc.model
+    Where speed >= '750' 
+    UNION
+    SELECT DISTINCT maker
+    FROM product JOIN laptop ON Product.model=laptop.model
+    WHERE speed>=750
 
+---------------------------------------------------------------------------------------------------------------------------
+-- 26)Задание: 26 (Serge I: 2003-02-14)
+-- Найдите среднюю цену ПК и ПК-блокнотов, выпущенных производителем A (латинская буква). Вывести: одна общая средняя цена.
+
+    SELECT AVG(price) AS avg_price FROM 
+    (
+    SELECT price FROM pc WHERE model 
+    IN
+    (SELECT model FROM product WHERE maker='A' AND type='PC')
+    UNION all
+    SELECT price FROM laptop WHERE model 
+    IN
+    (SELECT model FROM product WHERE maker='A' AND type='Laptop')
+    ) AS avg_price
