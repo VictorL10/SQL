@@ -1,6 +1,11 @@
 		   SQL_DDL
 		Первая часть.
 
+host - 159.69.151.133
+port - 5056
+BD - qa_ddl_36_77
+User - qa_36_gr_user_77
+
 
 ====================================================================================
 1)Создать таблицу employees
@@ -10,7 +15,7 @@
 
 	create table employees (
 	id SERIAL primary key,
-	eployee_name VARCHAR (50) not NULL
+	employee_name VARCHAR (50) not NULL
 	);
 ====================================================================================
 2)Наполнить таблицу employee 70 строками.
