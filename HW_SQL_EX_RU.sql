@@ -211,6 +211,15 @@
     UNION ALL SELECT price FROM Printer)
 ---------------------------------------------------------------------------------------------------------------------------
 
+-- Задание: 25 (Serge I: 2003-02-14)
+-- Найдите производителей принтеров, которые производят ПК с наименьшим объемом RAM и с самым быстрым процессором среди всех ПК, 
+-- имеющих наименьший объем RAM. Вывести: Maker
+
+    Select  distinct maker from product where maker in 
+    ( select maker from product join pc on product.model=pc.model where maker IN 
+    ( select maker from product where (type ='printer') 
+    and ram =(select min(ram) from pc ) and speed =(select max(speed) from pc where ram= (select min(ram) from pc ))))
+
 -- 26)Задание: 26 (Serge I: 2003-02-14)
 -- Найдите среднюю цену ПК и ПК-блокнотов, выпущенных производителем A (латинская буква). Вывести: одна общая средняя цена.
 
@@ -240,3 +249,35 @@
 -- Используя таблицу Product, определить количество производителей, выпускающих по одной модели.
 
     SELECT count(maker) AS count_maker FROM product GROUP BY maker HAVING COUNT(model) = '1'
+---------------------------------------------------------------------------------------------------------------------------
+
+-- Задание: 29 (Serge I: 2003-02-14)
+-- В предположении, что приход и расход денег на каждом пункте приема фиксируется не чаще одного раза в день [т.е. первичный ключ (пункт, дата)], написать запрос с выходными данными (пункт, дата, приход, расход). 
+-- Использовать таблицы Income_o и Outcome_o.
+
+    Select Income_o.point, Income_o.date, inc, out From Income_o left join Outcome_o
+    ON Outcome_o.point = Income_o.point AND Outcome_o.date = Income_o.date    
+    union
+    Select Outcome_o.point, Outcome_o.date, inc, out From Income_o right join 
+    Outcome_o ON Income_o.point = Outcome_o.point AND Income_o.date = Outcome_o.date
+---------------------------------------------------------------------------------------------------------------------------
+
+-- Задание: 30 (Serge I: 2003-02-14)
+-- В предположении, что приход и расход денег на каждом пункте приема фиксируется произвольное число раз 
+-- (первичным ключом в таблицах является столбец code), требуется получить таблицу, в которой каждому пункту за каждую дату 
+-- выполнения операций будет соответствовать одна строка.
+-- Вывод: point, date, суммарный расход пункта за день (out), суммарный приход пункта за день (inc). 
+-- Отсутствующие значения считать неопределенными (NULL).
+
+    SELECT point, date, SUM(out) AS sum_out, SUM(inc) AS sum_inc
+    FROM (SELECT point, date, out, null AS inc FROM Outcome
+    UNION ALL
+    SELECT point, date, null AS out, inc FROM Income) my_table
+    GROUP BY point, date
+---------------------------------------------------------------------------------------------------------------------------
+
+-- Задание: 31 (Serge I: 2002-10-22)
+-- Для классов кораблей, калибр орудий которых не менее 16 дюймов, укажите класс и страну.
+
+    Select class, country from Classes Where bore >= 16
+---------------------------------------------------------------------------------------------------------------------------
