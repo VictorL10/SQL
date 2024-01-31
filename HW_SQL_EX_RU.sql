@@ -205,13 +205,13 @@ UNION ALL SELECT price FROM Printer);
 -- всех ПК, имеющих наименьший объем RAM. Вывести: Maker
 
 Select  distinct maker from product where maker in 
-( select maker from product join pc on product.model=pc.model where maker 
+(Select maker from product join pc on product.model=pc.model where maker 
 IN 
-( select maker from product where (type ='printer') 
+(Select maker from product where (type ='printer') 
 and 
-ram =(select min(ram) from pc ) 
+ram =(Select min(ram) from pc ) 
 and 
-speed =(select max(speed) from pc where ram= (select min(ram) from pc ))
+speed =(Select max(speed) from pc where ram= (Select min(ram) from pc ))
 ));
 ---------------------------------------------------------------------------------------------------------------------------
 
@@ -219,15 +219,14 @@ speed =(select max(speed) from pc where ram= (select min(ram) from pc ))
 -- Найдите среднюю цену ПК и ПК-блокнотов, выпущенных производителем A (латинская буква). Вывести: одна общая средняя цена.
 
 SELECT AVG(price) AS avg_price FROM 
-(
-SELECT price FROM pc WHERE model 
+(SELECT price FROM pc WHERE model 
 IN
 (SELECT model FROM product WHERE maker='A' AND type='PC')
 UNION all
 SELECT price FROM laptop WHERE model 
 IN
 (SELECT model FROM product WHERE maker='A' AND type='Laptop')
-) AS avg_price;
+)AS avg_price;
 ---------------------------------------------------------------------------------------------------------------------------
 
 -- 27)Задание: 27 (Serge I: 2003-02-03)
